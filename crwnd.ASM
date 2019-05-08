@@ -18,9 +18,16 @@ section '.data' data readable writeable
      expBoxDesc12   db   'Barra de Menú A -> Elemento de Menú B',0
      expBoxDesc13   db   'Barra de Menú A -> Elemento de Menú C',0
      expBoxDesc21   db   'Barra de Menú B -> Elemento de Menú A',0
-     expBoxDesc30   db   'Barra de Menú C (Sin elementos)',0
+     expBoxDesc30   db   'Mi programa es el mas perron aqui',0dh,0ah,'Version beta',0
      progNombre     db   'Calc.exe',0
      notePad        db   'notepad.exe',0
+     sonido         db   'C:\Users\ADM\Downloads\aplauso.wav'
+
+     ;Constantes para PlaySound
+     SND_ALIAS          equ     10000h
+     SND_RESOURCE       equ     40005h
+     SND_FILENAME       equ     20000h
+     SND_ASYNC          equ     1h
 
 section '.code' code readable executable
      start:
@@ -108,6 +115,8 @@ section '.code' code readable executable
                               je   wmCOMMAND_13
                               cmp  ax,21
                               je   wmCOMMAND_21
+                              cmp  ax,22
+                              je   wmCOMMAND_22
                               cmp  ax,30
                               je   wmCOMMAND_30
                               jmp  wmDEFAULT
@@ -121,10 +130,15 @@ section '.code' code readable executable
                               invoke ShellExecute,0,0,notePad,0,0,SW_SHOW
                               jmp  wmBYE
                     wmCOMMAND_13:
-                              invoke    MessageBox,[hWnd],expBoxDesc13,expBoxTitle,MB_OK
+                             ; invoke    MessageBox,[hWnd],expBoxDesc13,expBoxTitle,MB_OK
+                              invoke MessageBeep,0
+                              invoke ExitProcess,0
                               jmp  wmBYE
                     wmCOMMAND_21:
                               invoke    MessageBox,[hWnd],expBoxDesc21,expBoxTitle,MB_OK
+                              jmp  wmBYE
+                    wmCOMMAND_22:
+                              invoke    PlaySound,sonido,0,(SND_FILENAME + SND_ASYNC)
                               jmp  wmBYE
                     wmCOMMAND_30:
                               invoke    MessageBox,[hWnd],expBoxDesc30,expBoxTitle,MB_OK
@@ -161,7 +175,8 @@ section '.idata' import data readable writeable
                MessageBox,         'MessageBoxA',\
                TranslateMessage,   'TranslateMessage',\
                DispatchMessage,    'DispatchMessageA',\
-               PostQuitMessage,    'PostQuitMessage'
+               PostQuitMessage,    'PostQuitMessage',\
+               MessageBeep,        'MessageBeep'
 
       import   SHELL32,\
                ShellExecute,    'ShellExecuteA'
